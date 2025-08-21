@@ -1,4 +1,4 @@
-﻿# Claude Code API 供应商切换脚本（优化版）
+# Claude Code API 供应商切换脚本（优化版）
 # 功能：
 # - 当前会话立即生效（瞬时）
 # - 异步持久化写入用户环境变量（不阻塞）
@@ -58,7 +58,7 @@ function Set-GLM {
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:GLM_API_KEY
     Persist-Env "ANTHROPIC_MODEL" "glm-4.5"
-    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" "glm-4.5"
+    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" "glm-4.5-air"
 }
 
 # 切换 Kimi
@@ -66,12 +66,12 @@ function Set-Kimi {
     $env:ANTHROPIC_BASE_URL = "https://api.moonshot.cn/anthropic"
     $env:ANTHROPIC_AUTH_TOKEN = $env:KIMI_API_KEY
     $env:ANTHROPIC_MODEL = "kimi-2"
-    $env:ANTHROPIC_SMALL_FAST_MODEL = "kimi-2"
+    $env:ANTHROPIC_SMALL_FAST_MODEL = "kimi-k2-0711-preview"
 
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:KIMI_API_KEY
-    Persist-Env "ANTHROPIC_MODEL" "kimi-2"
-    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" "kimi-2"
+    Persist-Env "ANTHROPIC_MODEL" "kimi-k2-0711-preview"
+    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" "kimi-k2-0711-preview"
 }
 
 # 清空
