@@ -53,7 +53,7 @@ function Set-GLM {
     $env:ANTHROPIC_BASE_URL = "https://open.bigmodel.cn/api/anthropic"
     $env:ANTHROPIC_AUTH_TOKEN = $env:GLM_API_KEY
     $env:ANTHROPIC_MODEL = "glm-4.5"
-    $env:ANTHROPIC_SMALL_FAST_MODEL = "glm-4.5"
+    $env:ANTHROPIC_SMALL_FAST_MODEL = "glm-4.5-air"
 
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:GLM_API_KEY
@@ -65,7 +65,7 @@ function Set-GLM {
 function Set-Kimi {
     $env:ANTHROPIC_BASE_URL = "https://api.moonshot.cn/anthropic"
     $env:ANTHROPIC_AUTH_TOKEN = $env:KIMI_API_KEY
-    $env:ANTHROPIC_MODEL = "kimi-2"
+    $env:ANTHROPIC_MODEL = "kimi-k2-0711-preview"
     $env:ANTHROPIC_SMALL_FAST_MODEL = "kimi-k2-0711-preview"
 
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
@@ -113,3 +113,4 @@ switch ($choice) {
 
 # 再次显示当前状态
 Show-CurrentProvider
+
