@@ -19,7 +19,6 @@
 - 用户环境变量持久化，新开 PowerShell 窗口也能生效
 - 清空当前 API 配置
 - 支持 PowerShell 5.1 与 PowerShell 7+
-- 异步写入环境变量
 
 
 ## 安装与配置
@@ -90,7 +89,7 @@ scc
 ## 注意事项
 
 * 如果使用 BAT 启动器，请确保 BAT 和 `switch.ps1` 在同一目录，或者修改 BAT 中路径。
-* 第一次切换时可能会写入用户环境变量，Windows 系统会有短暂延迟（几百毫秒至几秒）。
+* 第一次切换时可能会写入用户环境变量，Windows 系统会有短暂延迟（几秒）。
 * 建议在 用户环境变量 中设置好 `DEEPSEEK_API_KEY`、`GLM_API_KEY`、`KIMI_API_KEY` 环境变量。
 
 
