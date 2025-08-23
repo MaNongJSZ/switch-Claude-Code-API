@@ -9,14 +9,12 @@ function Show-CurrentProvider {
     $baseUrl = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_BASE_URL", "User")
     $model   = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_MODEL", "User")
     $fast    = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_SMALL_FAST_MODEL", "User")
-    $token   = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "User")
 
     if ($baseUrl) {
         Write-Host "🔎 当前供应商环境变量：" -ForegroundColor Yellow
         Write-Host "  BASE_URL   = $baseUrl"
         Write-Host "  MODEL      = $model"
         Write-Host "  FAST_MODEL = $fast"
-        Write-Host "  AUTH_TOKEN = $token"
         Write-Host ""
     } else {
         Write-Host "⚠️ 尚未配置 Claude Code API 环境变量" -ForegroundColor Red
@@ -113,4 +111,5 @@ switch ($choice) {
 
 # 再次显示当前状态
 Show-CurrentProvider
+
 
