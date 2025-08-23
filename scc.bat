@@ -1,2 +1,2 @@
 @echo off
-powershell -ExecutionPolicy Bypass -File "%~dp0switch.ps1"
+powershell -ExecutionPolicy Bypass -Command "& { . '%~dp0switch.ps1' }"
