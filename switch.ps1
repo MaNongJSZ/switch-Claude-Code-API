@@ -1,14 +1,18 @@
 # Claude Code API 供应商切换脚本（优化版）
 # 功能：
-# - 当前会话立即生效（瞬时）
-# - 异步持久化写入用户环境变量（不阻塞）
 # - 状态显示 + 清空配置
 # - 兼容 PowerShell 5.1 和 7
 
 function Show-CurrentProvider {
-    $baseUrl = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_BASE_URL", "User")
-    $model   = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_MODEL", "User")
-    $fast    = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_SMALL_FAST_MODEL", "User")
+    # 强制从用户环境变量刷新到当前会话
+    $env:ANTHROPIC_BASE_URL = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_BASE_URL", "User")
+    $env:ANTHROPIC_MODEL = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_MODEL", "User")
+    $env:ANTHROPIC_SMALL_FAST_MODEL = [System.Environment]::GetEnvironmentVariable("ANTHROPIC_SMALL_FAST_MODEL", "User")
+
+    # 显示当前会话中的环境变量 (现在是最新的)
+    $baseUrl = $env:ANTHROPIC_BASE_URL
+    $model   = $env:ANTHROPIC_MODEL
+    $fast    = $env:ANTHROPIC_SMALL_FAST_MODEL
 
     if ($baseUrl) {
         Write-Host "🔎 当前供应商环境变量：" -ForegroundColor Yellow
@@ -22,13 +26,10 @@ function Show-CurrentProvider {
     }
 }
 
-# 异步写入用户环境变量
+# 同步写入用户环境变量
 function Persist-Env {
     param($key, $value)
-    Start-Job -ScriptBlock {
-        param($k, $v)
-        [System.Environment]::SetEnvironmentVariable($k, $v, "User")
-    } -ArgumentList $key, $value | Out-Null
+    [System.Environment]::SetEnvironmentVariable($key, $value, "User")
 }
 
 # 切换 DeepSeek
@@ -39,11 +40,11 @@ function Set-DeepSeek {
     $env:ANTHROPIC_MODEL = "deepseek-chat"
     $env:ANTHROPIC_SMALL_FAST_MODEL = "deepseek-chat"
 
-    # 异步持久化
+    # 持久化
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:DEEPSEEK_API_KEY
-    Persist-Env "ANTHROPIC_MODEL" "deepseek-chat"
-    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" "deepseek-chat"
+    Persist-Env "ANTHROPIC_MODEL" $env:ANTHROPIC_MODEL
+    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" $env:ANTHROPIC_SMALL_FAST_MODEL
 }
 
 # 切换 GLM
@@ -55,8 +56,8 @@ function Set-GLM {
 
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:GLM_API_KEY
-    Persist-Env "ANTHROPIC_MODEL" "glm-4.5"
-    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" "glm-4.5-air"
+    Persist-Env "ANTHROPIC_MODEL" $env:ANTHROPIC_MODEL
+    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" $env:ANTHROPIC_SMALL_FAST_MODEL
 }
 
 # 切换 Kimi
@@ -68,8 +69,8 @@ function Set-Kimi {
 
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:KIMI_API_KEY
-    Persist-Env "ANTHROPIC_MODEL" "kimi-k2-0711-preview"
-    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" "kimi-k2-0711-preview"
+    Persist-Env "ANTHROPIC_MODEL" $env:ANTHROPIC_MODEL
+    Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" $env:ANTHROPIC_SMALL_FAST_MODEL
 }
 
 # 清空
@@ -112,4 +113,6 @@ switch ($choice) {
 # 再次显示当前状态
 Show-CurrentProvider
 
-
+# 提示用户需要在新终端中使用新配置
+Write-Host "ℹ️  请在新打开的终端/命令行窗口中运行 Claude Code 工具以使用新配置。" -ForegroundColor Blue
+Write-Host ""
