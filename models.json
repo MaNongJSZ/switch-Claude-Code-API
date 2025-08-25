@@ -1,0 +1,33 @@
+﻿{
+    "models":  {
+                   "deepseek":  {
+                                    "name":  "DeepSeek",
+                                    "base_url":  "https://api.deepseek.com/anthropic",
+                                    "api_key_env":  "DEEPSEEK_API_KEY",
+                                    "model":  "deepseek-chat",
+                                    "fast_model":  "deepseek-chat",
+                                    "description":  "DeepSeek AI API Service"
+                                },
+                   "glm":  {
+                               "name":  "GLM-4.5",
+                               "base_url":  "https://open.bigmodel.cn/api/anthropic",
+                               "api_key_env":  "GLM_API_KEY",
+                               "model":  "glm-4.5",
+                               "fast_model":  "glm-4.5-air",
+                               "description":  "Zhipu GLM-4.5 API Service"
+                           },
+                   "kimi":  {
+                                "name":  "Kimi",
+                                "base_url":  "https://api.moonshot.cn/anthropic",
+                                "api_key_env":  "KIMI_API_KEY",
+                                "model":  "kimi-k2-0711-preview",
+                                "fast_model":  "kimi-k2-0711-preview",
+                                "description":  "Moonshot Kimi API Service"
+                            }
+               },
+    "config":  {
+                   "version":  "2.0",
+                   "created":  "2025-08-24",
+                   "description":  "Claude Code API Provider Configuration"
+               }
+}
