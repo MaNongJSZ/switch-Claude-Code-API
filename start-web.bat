@@ -1,0 +1,3 @@
+@echo off
+echo Starting Claude Code API Web Interface...
+powershell -ExecutionPolicy Bypass -Command "& { . '%~dp0web-server.ps1' }"

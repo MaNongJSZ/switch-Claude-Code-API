@@ -23,7 +23,15 @@
                                 "model":  "kimi-k2-0711-preview",
                                 "fast_model":  "kimi-k2-0711-preview",
                                 "description":  "Moonshot Kimi API Service"
-                            }
+                            },
+                   "dsfdsf":  {
+                                  "fast_model":  "adf",
+                                  "name":  "dsfsd",
+                                  "api_key_env":  "sdfsddsf",
+                                  "description":  "fsdfsad",
+                                  "model":  "dsfa",
+                                  "base_url":  "http://localhost:8080/"
+                              }
                },
     "config":  {
                    "version":  "2.0",
