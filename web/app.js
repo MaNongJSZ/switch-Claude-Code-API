@@ -2,12 +2,145 @@
 class ApiManager {
     constructor() {
         this.baseUrl = 'http://localhost:8080/api';
+        this.currentLanguage = localStorage.getItem('language') || 'en';
+        this.translations = {
+            en: {
+                title: 'Claude Code API Configuration Manager',
+                subtitle: 'Web Interface - Manage and Switch API Provider Configurations',
+                currentStatus: '🔍 Current Configuration Status',
+                clearConfig: 'Clear Configuration',
+                refreshStatus: 'Refresh Status',
+                modelManagement: '🔧 Model Configuration Management',
+                searchPlaceholder: 'Search models...',
+                addNewModel: '➕ Add New Model',
+                addModelTitle: 'Add New Model Configuration',
+                modelIdLabel: 'Model ID *',
+                modelIdPlaceholder: 'e.g. claude3',
+                displayNameLabel: 'Display Name *',
+                displayNamePlaceholder: 'e.g. Claude 3',
+                descriptionLabel: 'Description',
+                descriptionPlaceholder: 'Model description',
+                baseUrlLabel: 'API Base URL *',
+                baseUrlPlaceholder: 'e.g. https://api.example.com/anthropic',
+                apiKeyEnvLabel: 'API Key Environment Variable *',
+                apiKeyEnvPlaceholder: 'e.g. CLAUDE_API_KEY',
+                mainModelLabel: 'Main Model Name *',
+                mainModelPlaceholder: 'e.g. claude-3-opus',
+                fastModelLabel: 'Fast Model Name',
+                fastModelPlaceholder: 'e.g. claude-3-haiku (leave empty to use main model)',
+                save: 'Save',
+                cancel: 'Cancel',
+                edit: 'Edit',
+                switchToModel: 'Switch to this model',
+                delete: 'Delete',
+                languageSwitch: 'CN',
+                statusBaseUrl: 'Base URL:',
+                statusMainModel: 'Main Model:',
+                statusFastModel: 'Fast Model:',
+                statusCurrentProvider: 'Current Provider:',
+                noConfigured: '🚫 No API provider currently configured',
+                pleaseSelect: 'Please select a model to configure',
+                description: 'Description:',
+                api: 'API:',
+                environmentVar: 'Environment Variable:',
+                models: 'Models:',
+                editModelTitle: 'Edit Model Configuration',
+                deleteConfirm: 'Are you sure you want to delete model "{0}" ({1})? This operation cannot be undone.',
+                clearConfirm: 'Are you sure you want to clear the current API configuration?'
+            },
+            zh: {
+                title: 'Claude Code API 配置管理器',
+                subtitle: 'Web界面 - 管理和切换API提供商配置',
+                currentStatus: '🔍 当前配置状态',
+                clearConfig: '清除配置',
+                refreshStatus: '刷新状态',
+                modelManagement: '🔧 模型配置管理',
+                searchPlaceholder: '搜索模型...',
+                addNewModel: '➕ 添加新模型',
+                addModelTitle: '添加新模型配置',
+                modelIdLabel: '模型ID *',
+                modelIdPlaceholder: '例如：claude3',
+                displayNameLabel: '显示名称 *',
+                displayNamePlaceholder: '例如：Claude 3',
+                descriptionLabel: '描述',
+                descriptionPlaceholder: '模型描述',
+                baseUrlLabel: 'API基础URL *',
+                baseUrlPlaceholder: '例如：https://api.example.com/anthropic',
+                apiKeyEnvLabel: 'API密钥环境变量 *',
+                apiKeyEnvPlaceholder: '例如：CLAUDE_API_KEY',
+                mainModelLabel: '主模型名称 *',
+                mainModelPlaceholder: '例如：claude-3-opus',
+                fastModelLabel: '快速模型名称',
+                fastModelPlaceholder: '例如：claude-3-haiku（留空使用主模型）',
+                save: '保存',
+                cancel: '取消',
+                edit: '编辑',
+                switchToModel: '切换到此模型',
+                delete: '删除',
+                languageSwitch: 'EN',
+                statusBaseUrl: '基础URL：',
+                statusMainModel: '主模型：',
+                statusFastModel: '快速模型：',
+                statusCurrentProvider: '当前提供商：',
+                noConfigured: '🚫 当前未配置API提供商',
+                pleaseSelect: '请选择模型进行配置',
+                description: '描述：',
+                api: 'API：',
+                environmentVar: '环境变量：',
+                models: '模型：',
+                editModelTitle: '编辑模型配置',
+                deleteConfirm: '确定要删除模型"{0}"（{1}）吗？此操作无法撤销。',
+                clearConfirm: '确定要清除当前API配置吗？'
+            }
+        };
+        this.editingModelId = null;
         this.init();
     }
 
     async init() {
+        this.updateLanguage();
         await this.loadCurrentStatus();
         await this.loadModels();
+    }
+
+    // 切换语言
+    async toggleLanguage() {
+        this.currentLanguage = this.currentLanguage === 'en' ? 'zh' : 'en';
+        localStorage.setItem('language', this.currentLanguage);
+        this.updateLanguage();
+        
+        // 重新渲染动态内容以应用新语言
+        await this.refreshDynamicContent();
+    }
+
+    // 更新页面语言
+    updateLanguage() {
+        const elements = document.querySelectorAll('[data-lang-key]');
+        elements.forEach(element => {
+            const key = element.getAttribute('data-lang-key');
+            if (this.translations[this.currentLanguage][key]) {
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.placeholder = this.translations[this.currentLanguage][key];
+                } else {
+                    element.textContent = this.translations[this.currentLanguage][key];
+                }
+            }
+        });
+    }
+
+    // 刷新动态内容（用于语言切换）
+    async refreshDynamicContent() {
+        try {
+            // 重新加载并显示当前状态
+            const status = await this.apiCall('/status');
+            this.displayCurrentStatus(status);
+            
+            // 重新加载并显示模型列表
+            const models = await this.apiCall('/models');
+            this.displayModels(models);
+        } catch (error) {
+            console.error('Failed to refresh dynamic content:', error);
+        }
     }
 
     // 显示消息
@@ -69,31 +202,32 @@ class ApiManager {
     // 显示当前状态
     displayCurrentStatus(status) {
         const container = document.getElementById('current-status');
+        const t = this.translations[this.currentLanguage];
         
         if (status.configured) {
             container.innerHTML = `
                 <div class="status-item">
-                    <span class="status-label">Base URL:</span>
+                    <span class="status-label">${t.statusBaseUrl}</span>
                     <span class="status-value">${status.baseUrl || 'Not set'}</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">Main Model:</span>
+                    <span class="status-label">${t.statusMainModel}</span>
                     <span class="status-value">${status.model || 'Not set'}</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">Fast Model:</span>
+                    <span class="status-label">${t.statusFastModel}</span>
                     <span class="status-value">${status.fastModel || 'Not set'}</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">Current Provider:</span>
+                    <span class="status-label">${t.statusCurrentProvider}</span>
                     <span class="status-value" style="font-weight: bold; color: #27ae60;">${status.provider || 'Unknown'}</span>
                 </div>
             `;
         } else {
             container.innerHTML = `
                 <div style="text-align: center; color: #7f8c8d;">
-                    <p>🚫 No API provider currently configured</p>
-                    <p>Please select a model to configure</p>
+                    <p>${t.noConfigured}</p>
+                    <p>${t.pleaseSelect}</p>
                 </div>
             `;
         }
@@ -113,6 +247,7 @@ class ApiManager {
     // 显示模型列表
     displayModels(models) {
         const container = document.getElementById('models-container');
+        const t = this.translations[this.currentLanguage];
         
         if (!models || models.length === 0) {
             container.innerHTML = '<div class="loading">No model configurations found</div>';
@@ -123,18 +258,54 @@ class ApiManager {
             <div class="model-card" data-model-id="${model.id}">
                 <h3>${model.name}</h3>
                 <div class="model-info">
-                    <span><strong>Description:</strong> ${model.description || 'No description'}</span>
-                    <span><strong>API:</strong> ${model.base_url}</span>
-                    <span><strong>Environment Variable:</strong> ${model.api_key_env}</span>
-                    <span><strong>Models:</strong> ${model.model} / ${model.fast_model}</span>
+                    <span><strong>${t.description}</strong> ${model.description || 'No description'}</span>
+                    <span><strong>${t.api}</strong> ${model.base_url}</span>
+                    <span><strong>${t.environmentVar}</strong> ${model.api_key_env}</span>
+                    <span><strong>${t.models}</strong> ${model.model} / ${model.fast_model}</span>
                 </div>
                 <div class="button-group">
                     <button class="btn btn-primary" onclick="apiManager.switchToModel('${model.id}')">
-                        Switch to this model
+                        ${t.switchToModel}
+                    </button>
+                    <button class="btn btn-warning" onclick="apiManager.editModel('${model.id}')">
+                        ${t.edit}
                     </button>
                     <button class="btn btn-danger" onclick="apiManager.deleteModel('${model.id}', '${model.name}')">
-                        Delete
+                        ${t.delete}
                     </button>
+                </div>
+                <div id="edit-form-${model.id}" class="edit-form">
+                    <h4>${t.editModelTitle}</h4>
+                    <form onsubmit="apiManager.updateModel(event, '${model.id}')">
+                        <div class="form-group">
+                            <label>${t.displayNameLabel}</label>
+                            <input type="text" id="edit-name-${model.id}" value="${model.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>${t.descriptionLabel}</label>
+                            <textarea id="edit-desc-${model.id}">${model.description || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>${t.baseUrlLabel}</label>
+                            <input type="url" id="edit-url-${model.id}" value="${model.base_url}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>${t.apiKeyEnvLabel}</label>
+                            <input type="text" id="edit-env-${model.id}" value="${model.api_key_env}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>${t.mainModelLabel}</label>
+                            <input type="text" id="edit-main-${model.id}" value="${model.model}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>${t.fastModelLabel}</label>
+                            <input type="text" id="edit-fast-${model.id}" value="${model.fast_model}">
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-success">${t.save}</button>
+                            <button type="button" class="btn btn-danger" onclick="apiManager.cancelEdit('${model.id}')">${t.cancel}</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         `).join('');
@@ -155,9 +326,79 @@ class ApiManager {
         }
     }
 
+    // 编辑模型
+    editModel(modelId) {
+        // 隐藏其他编辑表单
+        document.querySelectorAll('.edit-form').forEach(form => {
+            form.style.display = 'none';
+        });
+        
+        // 显示当前编辑表单
+        const editForm = document.getElementById(`edit-form-${modelId}`);
+        editForm.style.display = 'block';
+        this.editingModelId = modelId;
+    }
+
+    // 取消编辑
+    cancelEdit(modelId) {
+        const editForm = document.getElementById(`edit-form-${modelId}`);
+        editForm.style.display = 'none';
+        this.editingModelId = null;
+    }
+
+    // 更新模型
+    async updateModel(event, modelId) {
+        event.preventDefault();
+        
+        const formData = {
+            id: modelId,
+            name: document.getElementById(`edit-name-${modelId}`).value,
+            description: document.getElementById(`edit-desc-${modelId}`).value,
+            base_url: document.getElementById(`edit-url-${modelId}`).value,
+            api_key_env: document.getElementById(`edit-env-${modelId}`).value,
+            model: document.getElementById(`edit-main-${modelId}`).value,
+            fast_model: document.getElementById(`edit-fast-${modelId}`).value || document.getElementById(`edit-main-${modelId}`).value
+        };
+
+        // 验证必填字段
+        if (!formData.name || !formData.base_url || !formData.api_key_env || !formData.model) {
+            this.showError('Please fill in all required fields');
+            return;
+        }
+
+        try {
+            await this.apiCall(`/models/${modelId}`, {
+                method: 'PUT',
+                body: JSON.stringify(formData)
+            });
+            
+            this.showMessage(`Successfully updated model: ${formData.name}`);
+            this.cancelEdit(modelId);
+            await this.loadModels();
+        } catch (error) {
+            this.showError(`Failed to update model: ${error.message}`);
+        }
+    }
+    async switchToModel(modelId) {
+        try {
+            const result = await this.apiCall('/switch', {
+                method: 'POST',
+                body: JSON.stringify({ modelId })
+            });
+            
+            this.showMessage(`Successfully switched to model: ${modelId}`);
+            await this.loadCurrentStatus();
+        } catch (error) {
+            this.showError(`Failed to switch model: ${error.message}`);
+        }
+    }
+
     // 删除模型
     async deleteModel(modelId, modelName) {
-        if (!confirm(`Are you sure you want to delete model "${modelName}" (${modelId})? This operation cannot be undone.`)) {
+        const t = this.translations[this.currentLanguage];
+        const confirmMsg = t.deleteConfirm.replace('{0}', modelName).replace('{1}', modelId);
+        
+        if (!confirm(confirmMsg)) {
             return;
         }
 
@@ -216,7 +457,9 @@ class ApiManager {
 
     // 清空配置
     async clearConfiguration() {
-        if (!confirm('Are you sure you want to clear the current API configuration?')) {
+        const t = this.translations[this.currentLanguage];
+        
+        if (!confirm(t.clearConfirm)) {
             return;
         }
 
@@ -313,4 +556,8 @@ function refreshStatus() {
 
 function filterModels() {
     return apiManager.filterModels();
+}
+
+function toggleLanguage() {
+    return apiManager.toggleLanguage();
 }

@@ -233,13 +233,39 @@
             border-radius: 5px;
             width: 300px;
         }
+
+        .language-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .language-switch:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .edit-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Claude Code API Configuration Manager</h1>
-            <p>Web Interface - Manage and Switch API Provider Configurations</p>
+            <button class="language-switch" onclick="toggleLanguage()" data-lang-key="languageSwitch">EN</button>
+            <h1 data-lang-key="title">Claude Code API Configuration Manager</h1>
+            <p data-lang-key="subtitle">Web Interface - Manage and Switch API Provider Configurations</p>
         </div>
 
         <div class="content">
@@ -247,22 +273,22 @@
 
             <!-- Current Status -->
             <div class="section">
-                <h2>🔍 Current Configuration Status</h2>
+                <h2 data-lang-key="currentStatus">🔍 Current Configuration Status</h2>
                 <div id="current-status" class="current-status">
                     <div class="loading">Loading current status...</div>
                 </div>
                 <div class="button-group">
-                    <button class="btn btn-warning" onclick="clearConfiguration()">Clear Configuration</button>
-                    <button class="btn btn-primary" onclick="refreshStatus()">Refresh Status</button>
+                    <button class="btn btn-warning" onclick="clearConfiguration()" data-lang-key="clearConfig">Clear Configuration</button>
+                    <button class="btn btn-primary" onclick="refreshStatus()" data-lang-key="refreshStatus">Refresh Status</button>
                 </div>
             </div>
 
             <!-- Model Management -->
             <div class="section">
-                <h2>🔧 Model Configuration Management</h2>
+                <h2 data-lang-key="modelManagement">🔧 Model Configuration Management</h2>
                 <div class="toolbar">
-                    <input type="text" id="search-box" class="search-box" placeholder="Search models..." onkeyup="filterModels()">
-                    <button class="btn btn-success" onclick="showAddForm()">➕ Add New Model</button>
+                    <input type="text" id="search-box" class="search-box" data-lang-key="searchPlaceholder" placeholder="Search models..." onkeyup="filterModels()">
+                    <button class="btn btn-success" onclick="showAddForm()" data-lang-key="addNewModel">➕ Add New Model</button>
                 </div>
 
                 <div id="models-container" class="models-grid">
@@ -273,39 +299,39 @@
             <!-- Add Model Form -->
             <div class="section">
                 <div id="add-form" class="form-section">
-                    <h3>Add New Model Configuration</h3>
+                    <h3 data-lang-key="addModelTitle">Add New Model Configuration</h3>
                     <form onsubmit="addModel(event)">
                         <div class="form-group">
-                            <label for="model-id">Model ID *</label>
-                            <input type="text" id="model-id" required placeholder="e.g. claude3">
+                            <label for="model-id" data-lang-key="modelIdLabel">Model ID *</label>
+                            <input type="text" id="model-id" required data-lang-key="modelIdPlaceholder" placeholder="e.g. claude3">
                         </div>
                         <div class="form-group">
-                            <label for="model-name">Display Name *</label>
-                            <input type="text" id="model-name" required placeholder="e.g. Claude 3">
+                            <label for="model-name" data-lang-key="displayNameLabel">Display Name *</label>
+                            <input type="text" id="model-name" required data-lang-key="displayNamePlaceholder" placeholder="e.g. Claude 3">
                         </div>
                         <div class="form-group">
-                            <label for="model-description">Description</label>
-                            <textarea id="model-description" placeholder="Model description"></textarea>
+                            <label for="model-description" data-lang-key="descriptionLabel">Description</label>
+                            <textarea id="model-description" data-lang-key="descriptionPlaceholder" placeholder="Model description"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="model-base-url">API Base URL *</label>
-                            <input type="url" id="model-base-url" required placeholder="e.g. https://api.example.com/anthropic">
+                            <label for="model-base-url" data-lang-key="baseUrlLabel">API Base URL *</label>
+                            <input type="url" id="model-base-url" required data-lang-key="baseUrlPlaceholder" placeholder="e.g. https://api.example.com/anthropic">
                         </div>
                         <div class="form-group">
-                            <label for="model-api-key-env">API Key Environment Variable *</label>
-                            <input type="text" id="model-api-key-env" required placeholder="e.g. CLAUDE_API_KEY">
+                            <label for="model-api-key-env" data-lang-key="apiKeyEnvLabel">API Key Environment Variable *</label>
+                            <input type="text" id="model-api-key-env" required data-lang-key="apiKeyEnvPlaceholder" placeholder="e.g. CLAUDE_API_KEY">
                         </div>
                         <div class="form-group">
-                            <label for="model-main">Main Model Name *</label>
-                            <input type="text" id="model-main" required placeholder="e.g. claude-3-opus">
+                            <label for="model-main" data-lang-key="mainModelLabel">Main Model Name *</label>
+                            <input type="text" id="model-main" required data-lang-key="mainModelPlaceholder" placeholder="e.g. claude-3-opus">
                         </div>
                         <div class="form-group">
-                            <label for="model-fast">Fast Model Name</label>
-                            <input type="text" id="model-fast" placeholder="e.g. claude-3-haiku (leave empty to use main model)">
+                            <label for="model-fast" data-lang-key="fastModelLabel">Fast Model Name</label>
+                            <input type="text" id="model-fast" data-lang-key="fastModelPlaceholder" placeholder="e.g. claude-3-haiku (leave empty to use main model)">
                         </div>
                         <div class="button-group">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <button type="button" class="btn btn-danger" onclick="hideAddForm()">Cancel</button>
+                            <button type="submit" class="btn btn-success" data-lang-key="save">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="hideAddForm()" data-lang-key="cancel">Cancel</button>
                         </div>
                     </form>
                 </div>
