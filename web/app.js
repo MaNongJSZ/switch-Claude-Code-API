@@ -1,7 +1,7 @@
 // Claude Code API Web Interface
 class ApiManager {
     constructor() {
-        this.baseUrl = 'http://localhost:8088/api';
+        this.baseUrl = 'http://localhost:8080/api';
         this.currentLanguage = localStorage.getItem('language') || 'en';
         this.translations = {
             en: {
