@@ -120,9 +120,9 @@ start-web.bat
 
 启动后浏览器会自动打开 `http://localhost:8080`，显示 Web 界面。
 
-![alt text](assets\image.png)
-![alt text](assets\image-1.png)
-![alt text](assets\image-2.png)
+![image](assets/image.png)
+![image](assets/image-1.png)
+![image](assets/image-2.png)
 #### Web 界面功能
 
 **📊 状态监控**
