@@ -60,29 +60,43 @@ function Show-CurrentProvider {
     }
 }
 
-# 同步写入用户环境变量
+# 同步写入用户环境变量（异步优化版）
 function Persist-Env {
     param($key, $value)
-    [System.Environment]::SetEnvironmentVariable($key, $value, "User")
+    # 当前会话立即生效
+    [System.Environment]::SetEnvironmentVariable($key, $value, "Process")
+    
+    # 异步持久化到用户环境变量
+    Start-Job -ScriptBlock {
+        param($envKey, $envValue)
+        [System.Environment]::SetEnvironmentVariable($envKey, $envValue, "User")
+    } -ArgumentList $key, $value | Out-Null
 }
 
 # 切换 DeepSeek
 function Set-DeepSeek {
+    Write-Host "正在切换到 DeepSeek API..." -ForegroundColor Yellow
+    
     # 当前会话立即生效
     $env:ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"
     $env:ANTHROPIC_AUTH_TOKEN = $env:DEEPSEEK_API_KEY
     $env:ANTHROPIC_MODEL = "deepseek-chat"
     $env:ANTHROPIC_SMALL_FAST_MODEL = "deepseek-chat"
 
-    # 持久化
+    # 异步持久化（不阻塞主线程）
     Persist-Env "ANTHROPIC_BASE_URL" $env:ANTHROPIC_BASE_URL
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:DEEPSEEK_API_KEY
     Persist-Env "ANTHROPIC_MODEL" $env:ANTHROPIC_MODEL
     Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" $env:ANTHROPIC_SMALL_FAST_MODEL
+    
+    Write-Host "[成功] 当前会话已立即切换到 DeepSeek API" -ForegroundColor Green
+    Write-Host "[提示] 新的终端窗口将在几秒钟后自动使用此配置" -ForegroundColor Cyan
 }
 
 # 切换 GLM
 function Set-GLM {
+    Write-Host "正在切换到 GLM-4.5 API..." -ForegroundColor Yellow
+    
     $env:ANTHROPIC_BASE_URL = "https://open.bigmodel.cn/api/anthropic"
     $env:ANTHROPIC_AUTH_TOKEN = $env:GLM_API_KEY
     $env:ANTHROPIC_MODEL = "glm-4.5"
@@ -92,10 +106,15 @@ function Set-GLM {
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:GLM_API_KEY
     Persist-Env "ANTHROPIC_MODEL" $env:ANTHROPIC_MODEL
     Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" $env:ANTHROPIC_SMALL_FAST_MODEL
+    
+    Write-Host "[成功] 当前会话已立即切换到 GLM-4.5 API" -ForegroundColor Green
+    Write-Host "[提示] 新的终端窗口将在几秒钟后自动使用此配置" -ForegroundColor Cyan
 }
 
 # 切换 Kimi
 function Set-Kimi {
+    Write-Host "正在切换到 Kimi API..." -ForegroundColor Yellow
+    
     $env:ANTHROPIC_BASE_URL = "https://api.moonshot.cn/anthropic"
     $env:ANTHROPIC_AUTH_TOKEN = $env:KIMI_API_KEY
     $env:ANTHROPIC_MODEL = "kimi-k2-0711-preview"
@@ -105,10 +124,15 @@ function Set-Kimi {
     Persist-Env "ANTHROPIC_AUTH_TOKEN" $env:KIMI_API_KEY
     Persist-Env "ANTHROPIC_MODEL" $env:ANTHROPIC_MODEL
     Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" $env:ANTHROPIC_SMALL_FAST_MODEL
+    
+    Write-Host "[成功] 当前会话已立即切换到 Kimi API" -ForegroundColor Green
+    Write-Host "[提示] 新的终端窗口将在几秒钟后自动使用此配置" -ForegroundColor Cyan
 }
 
 # 清空
 function Clear-Env {
+    Write-Host "正在清空配置..." -ForegroundColor Yellow
+    
     $env:ANTHROPIC_BASE_URL = $null
     $env:ANTHROPIC_AUTH_TOKEN = $null
     $env:ANTHROPIC_MODEL = $null
@@ -120,6 +144,7 @@ function Clear-Env {
     Persist-Env "ANTHROPIC_SMALL_FAST_MODEL" $null
 
     Write-Host "[成功] 已清空 Claude Code API 环境变量" -ForegroundColor Green
+    Write-Host "[提示] 新的终端窗口将在几秒钟后自动使用此配置" -ForegroundColor Cyan
 }
 
 # 主菜单
@@ -136,9 +161,9 @@ Write-Host ""
 $choice = Read-Host "请输入编号 (0~4)"
 
 switch ($choice) {
-    "1" { Set-DeepSeek; Write-Host "[成功] 已切换到 DeepSeek API" -ForegroundColor Green }
-    "2" { Set-GLM; Write-Host "[成功] 已切换到 GLM-4.5 API" -ForegroundColor Green }
-    "3" { Set-Kimi; Write-Host "[成功] 已切换到 Kimi API" -ForegroundColor Green }
+    "1" { Set-DeepSeek }
+    "2" { Set-GLM }
+    "3" { Set-Kimi }
     "4" { Clear-Env }
     "0" { Write-Host "已退出"; exit }
     Default { Write-Host "[错误] 无效选择，请输入 0~4" -ForegroundColor Red }
@@ -147,6 +172,7 @@ switch ($choice) {
 # 再次显示当前状态
 Show-CurrentProvider
 
-# 提示用户需要在新终端中使用新配置
-Write-Host "[提示] 请在新打开的终端/命令行窗口中运行 Claude Code 工具以使用新配置。" -ForegroundColor Blue
+# 提示用户当前会话已立即生效
+Write-Host "[提示] 当前 PowerShell 窗口中的配置已立即生效。" -ForegroundColor Green
+Write-Host "[提示] 新打开的终端/命令行窗口将在几秒钟后使用此配置。" -ForegroundColor Blue
 Write-Host ""

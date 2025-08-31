@@ -1,0 +1,16 @@
+{
+  "apiKeys": {
+    "DEEPSEEK_API_KEY": {
+      "name": "DeepSeek",
+      "description": "DeepSeek API密钥"
+    },
+    "GLM_API_KEY": {
+      "name": "GLM",
+      "description": "GLM API密钥"
+    },
+    "KIMI_API_KEY": {
+      "name": "Kimi",
+      "description": "Kimi API密钥"
+    }
+  }
+}

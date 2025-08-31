@@ -117,6 +117,19 @@
         .button-group {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .button-group .btn {
+            flex: 1;
+            min-width: 80px;
+            max-width: 120px;
+            font-size: 12px;
+            padding: 8px 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .btn {
@@ -126,6 +139,33 @@
             cursor: pointer;
             font-size: 14px;
             transition: background-color 0.3s;
+            position: relative;
+            min-width: 120px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn.loading {
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            color: white;
         }
 
         .btn-primary {
@@ -202,22 +242,92 @@
         }
 
         .message {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10001;
+            padding: 20px 30px;
+            border-radius: 10px;
             display: none;
+            border-left: 4px solid;
+            animation: messageSlideIn 0.4s ease-out;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            min-width: 300px;
+            max-width: 500px;
+            text-align: center;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .message.success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left-color: #28a745;
             color: #155724;
         }
 
+        .message.success::before {
+            content: '✓';
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
         .message.error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-left-color: #dc3545;
             color: #721c24;
+        }
+
+        .message.error::before {
+            content: '✕';
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .message.info {
+            background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+            border-left-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .message.info::before {
+            content: 'ℹ';
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .message.warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+
+        .message.warning::before {
+            content: '⚠';
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
         }
 
         .toolbar {
@@ -258,9 +368,224 @@
             margin-top: 15px;
             display: none;
         }
+
+        .api-key-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+
+        .api-key-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .api-key-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .api-key-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-indicator.configured {
+            background-color: #28a745;
+        }
+
+        .status-indicator.not-configured {
+            background-color: #dc3545;
+        }
+
+        .api-key-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .api-key-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            min-width: 200px;
+        }
+
+        .api-key-button-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .api-key-preview {
+            font-family: monospace;
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .test-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .test-input-section {
+            margin-bottom: 20px;
+        }
+
+        .test-input-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .test-prompt-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        .test-result-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .test-result {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            min-height: 100px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .test-result.loading {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .test-result.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .test-result.error {
+            border-left: 4px solid #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* 页面加载状态（无遮罩层，居中显示） */
+        .page-loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .page-loading.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spinner-rotate 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spinner-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text-display {
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* 消息背景遮罩 */
+        .message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .message-overlay.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
+    <!-- 消息背景遮罩 -->
+    <div id="message-overlay" class="message-overlay"></div>
+    
+    <!-- 消息提示框 -->
+    <div id="message" class="message"></div>
+    
+    <!-- 页面加载状态（无遮罩层，居中显示） -->
+    <div id="page-loading" class="page-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text-display" data-lang-key="loading">加载中...</div>
+    </div>
+
     <div class="container">
         <div class="header">
             <button class="language-switch" onclick="toggleLanguage()" data-lang-key="languageSwitch">EN</button>
@@ -269,7 +594,6 @@
         </div>
 
         <div class="content">
-            <div id="message" class="message"></div>
 
             <!-- Current Status -->
             <div class="section">
@@ -293,6 +617,56 @@
 
                 <div id="models-container" class="models-grid">
                     <div class="loading">Loading model configurations...</div>
+                </div>
+            </div>
+
+            <!-- API Key Management -->
+            <div class="section">
+                <h2 data-lang-key="apiKeyManagement">🔑 API Key Management</h2>
+                <div class="toolbar">
+                    <button class="btn btn-success" onclick="showAddApiKeyForm()" data-lang-key="addNewApiKey">➕ Add New API Key</button>
+                </div>
+                <div id="api-keys-container">
+                    <div class="loading">Loading API key status...</div>
+                </div>
+                
+                <!-- 添加API密钥表单 -->
+                <div id="add-api-key-form" class="form-section" style="display: none;">
+                    <h3 data-lang-key="addApiKeyTitle">Add New API Key</h3>
+                    <form onsubmit="addNewApiKey(event)">
+                        <div class="form-group">
+                            <label for="api-key-env-var" data-lang-key="envVarName">Environment Variable Name *</label>
+                            <input type="text" id="api-key-env-var" required data-lang-key="envVarPlaceholder" placeholder="e.g. DEEPSEEK_API_KEY">
+                        </div>
+                        <div class="form-group">
+                            <label for="api-key-value" data-lang-key="apiKeyValue">API Key Value *</label>
+                            <input type="password" id="api-key-value" required data-lang-key="apiKeyValuePlaceholder" placeholder="Enter your API key...">
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-success" data-lang-key="save">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="hideAddApiKeyForm()" data-lang-key="cancel">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Model Testing -->
+            <div class="section">
+                <h2 data-lang-key="modelTesting">🧪 Model Testing</h2>
+                <div class="test-panel">
+                    <div class="test-input-section">
+                        <label for="test-prompt" data-lang-key="testPrompt">Test current model configuration</label>
+                        <textarea id="test-prompt" 
+                                  class="test-prompt-input" 
+                                  data-lang-key="promptPlaceholder"
+                                  placeholder="Enter your test prompt here..."
+                                  rows="4"></textarea>
+                        <button class="btn btn-primary" onclick="testCurrentModel()" data-lang-key="testModel">Test Model</button>
+                    </div>
+                    <div id="test-result-section" class="test-result-section" style="display: none;">
+                        <h3 data-lang-key="testResult">Test Result</h3>
+                        <div id="test-result" class="test-result"></div>
+                    </div>
                 </div>
             </div>
 
